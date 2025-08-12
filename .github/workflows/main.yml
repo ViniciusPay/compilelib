@@ -1,4 +1,4 @@
-name: Build SO
+name: Build SO (Multi-Arquitetura Organizado)
 
 on:
   push:
@@ -19,13 +19,30 @@ jobs:
         unzip android-ndk-r27d-linux.zip
         mv android-ndk-r27d $HOME/android-ndk
 
-    - name: Compilar para ARM64
+    - name: Compilar para todas arquiteturas
       run: |
-        $HOME/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android21-clang \
-        -shared -o libnebulakernel.so libnebulakernel.c
+        NDK=$HOME/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/bin
+        SRC="libnebulakernel.c"
 
-    - name: Enviar artefato compilado
+        # Compilar cada arquitetura
+        $NDK/armv7a-linux-androideabi21-clang -shared -o libnebulakernel-armeabi-v7a.so $SRC
+        $NDK/aarch64-linux-android21-clang -shared -o libnebulakernel-arm64-v8a.so $SRC
+        $NDK/i686-linux-android21-clang -shared -o libnebulakernel-x86.so $SRC
+        $NDK/x86_64-linux-android21-clang -shared -o libnebulakernel-x86_64.so $SRC
+
+        # Organizar libs em pastas padrão Android
+        mkdir -p libs/armeabi-v7a libs/arm64-v8a libs/x86 libs/x86_64
+
+        mv libnebulakernel-armeabi-v7a.so libs/armeabi-v7a/libnebulakernel.so
+        mv libnebulakernel-arm64-v8a.so libs/arm64-v8a/libnebulakernel.so
+        mv libnebulakernel-x86.so libs/x86/libnebulakernel.so
+        mv libnebulakernel-x86_64.so libs/x86_64/libnebulakernel.so
+
+        # Compactar para enviar
+        zip -r libs.zip libs
+
+    - name: Enviar artefato organizado
       uses: actions/upload-artifact@v4
       with:
-        name: libnebulakernel
-        path: libnebulakernel.so
+        name: libs-organizadas
+        path: libs.zip
