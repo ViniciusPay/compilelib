@@ -1,17 +1,38 @@
 #include <jni.h>
 #include <string.h>
+#include <stdlib.h>
 
 static const unsigned char xor_key = 0x5A;
 
-static const unsigned char enc_link[] = { 0x32,0x2e,0x2a,0x29,0x60,0x75,0x75,0x3b,0x2a,0x33,0x77,0x36,0x3b,0x2f,0x34,0x39,0x32,0x3f,0x28,0x77,0x29,0x2c,0x6b,0x74,0x2d,0x2f,0x3b,0x20,0x3f,0x74,0x39,0x35,0x37,0x75 };
-static const int enc_len = sizeof(enc_link);
+// Coloque aqui o link original, sem criptografia
+static const char plain_link[] = "https://api-launcher-sv1.wuaze.com/";
 
 JNIEXPORT jstring JNICALL
 Java_com_launcher_gold_NebulaKernel_fetch(JNIEnv *env, jclass clazz) {
-    char decrypted[enc_len + 1];
-    for (int i = 0; i < enc_len; i++) {
-        decrypted[i] = enc_link[i] ^ xor_key;
+    int len = strlen(plain_link);
+    unsigned char *encrypted = (unsigned char*) malloc(len + 1);
+    if (!encrypted) return NULL;
+
+    // Criptografa o link
+    for (int i = 0; i < len; i++) {
+        encrypted[i] = plain_link[i] ^ xor_key;
     }
-    decrypted[enc_len] = '\0';
-    return (*env)->NewStringUTF(env, decrypted);
+    encrypted[len] = '\0';
+
+    // Descriptografa pra entregar o texto limpo
+    char *decrypted = (char*) malloc(len + 1);
+    if (!decrypted) {
+        free(encrypted);
+        return NULL;
+    }
+    for (int i = 0; i < len; i++) {
+        decrypted[i] = encrypted[i] ^ xor_key;
+    }
+    decrypted[len] = '\0';
+
+    free(encrypted);
+
+    jstring result = (*env)->NewStringUTF(env, decrypted);
+    free(decrypted);
+    return result;
 }
