@@ -31,7 +31,7 @@ jobs:
         $NDK/x86_64-linux-android21-clang -shared -o libnebulakernel-x86_64.so $SRC
 
         # Organizar libs em pastas padrão Android
-        mkdir -p libs/armeabi-v7a libs/arm64-v8a libs/x86 libs/x86_64
+        mkdir -p lib/armeabi-v7a libs/arm64-v8a libs/x86 libs/x86_64
 
         mv libnebulakernel-armeabi-v7a.so libs/armeabi-v7a/libnebulakernel.so
         mv libnebulakernel-arm64-v8a.so libs/arm64-v8a/libnebulakernel.so
@@ -45,4 +45,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: libs-organizadas
-        path: libs.zip
+        path: lib.zip
