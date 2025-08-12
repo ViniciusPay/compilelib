@@ -11,7 +11,7 @@ jobs:
 
     steps:
     - name: Baixar código
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Baixar Android NDK
       run: |
@@ -24,8 +24,8 @@ jobs:
         $HOME/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android21-clang \
         -shared -o libnebulakernel.so libnebulakernel.c
 
-    - name: Salvar artefato
-      uses: actions/upload-artifact@v3
+    - name: Enviar artefato compilado
+      uses: actions/upload-artifact@v4
       with:
         name: libnebulakernel
         path: libnebulakernel.so
