@@ -5,7 +5,7 @@
 static const unsigned char xor_key = 0x5A;
 
 // Coloque aqui o link original, sem criptografia
-static const char plain_link[] = "https://api-launcher-sv1.wuaze.com/";
+static const char plain_link[] = "https://painel.digitalns.com.br/sv1-vinicius/";
 
 JNIEXPORT jstring JNICALL
 Java_com_launcher_gold_NebulaKernel_fetch(JNIEnv *env, jclass clazz) {
